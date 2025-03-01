@@ -1,0 +1,11 @@
+﻿.home-page h1 {
+    margin-bottom: 20px;
+  }
+  .category-group {
+    margin-bottom: 40px;
+  }
+  .posts-grid {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  

@@ -1,0 +1,32 @@
+﻿.sidebar {
+    position: fixed;
+    top: 0;
+    right: -250px;
+    width: 250px;
+    height: 100%;
+    background: #fff;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.3);
+    transition: right 0.3s ease;
+    padding: 20px;
+    z-index: 1000;
+  }
+  .sidebar.open {
+    right: 0;
+  }
+  .sidebar .close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    float: right;
+    cursor: pointer;
+  }
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 40px;
+  }
+  .sidebar li {
+    margin: 20px 0;
+    cursor: pointer;
+  }
+  

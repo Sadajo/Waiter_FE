@@ -1,5 +1,5 @@
 // src/components/Layout.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -31,7 +31,7 @@ const Layout = () => {
   };
 
   const closeAuthModal = () => setAuthModalType(null);
-
+    
   // 회원가입: DB에 등록만 하고 자동 로그인은 하지 않음
   const handleSignup = async (data) => {
     try {
@@ -61,6 +61,8 @@ const Layout = () => {
       });
       if (result && result.user) {
         setUser(result.user);
+        // localStorage에 저장 (예: JSON.stringify로 저장)
+      localStorage.setItem('user', JSON.stringify(result.user));
         alert("✅ 로그인 성공");
         closeAuthModal();
       } else {
@@ -78,6 +80,7 @@ const Layout = () => {
       const result = await userApi.logout();
       if (result && result.message === 'User logged out successfully') {
         setUser(null);
+        localStorage.removeItem('user'); // localStorage에서 삭제
         closeSidebar();
         alert("✅ 로그아웃 성공");
       } else {
@@ -89,6 +92,18 @@ const Layout = () => {
     }
   };
 
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("localStorage 사용자 정보 파싱 실패:", error);
+      }
+    }
+  }, []);
+  
   return (
     <div className="layout-container">
       <Header toggleSidebar={toggleSidebar} />

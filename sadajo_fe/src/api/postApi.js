@@ -10,7 +10,7 @@ const postApi = {
     if(response.data.status !== 'success') {
       throw new Error(response.data.message);
     }
-    return response.data.data; // 이거 다시좀 봐야할듯?
+    return response.data; // 이거 다시좀 봐야할듯?
   },
   createPost: async (postData) => {
     const response = await axiosInstance.post('/posts', postData);

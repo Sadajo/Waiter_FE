@@ -6,6 +6,8 @@ import Sidebar from './Sidebar';
 import Footer from './Footer';
 import AuthModal from './AuthModal';
 import userApi from '../api/userApi.js';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import '../styles/Layout.css';
 
 const Layout = () => {
@@ -109,6 +111,8 @@ const Layout = () => {
         onClose={closeAuthModal}
         onSubmit={authModalType === 'login' ? handleLogin : handleSignup}
       />
+      <ToastContainer position="top-center" autoClose={3000} />
+
     </div>
   );
 };

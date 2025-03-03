@@ -179,8 +179,8 @@
 
 // export default HomePage;
 import React, { useEffect, useState } from 'react';
-import postApi from '../api/postApi';
-import PostCard from '../components/PostCard';
+import postApi from '../api/postApi.js';
+import PostCard from '../components/PostCard.jsx';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import '../styles/HomePage.css';
 
@@ -227,7 +227,7 @@ const HomePage = () => {
           <h2>{category}</h2>
           <div className="posts-grid">
             {groupedPosts[category].slice(0, 9).map(post => (
-              <PostCard key={post._id} post={post} />
+              <PostCard key={post._id} post={post} mode="home" />
             ))}
           </div>
           {groupedPosts[category].length > 9 && (

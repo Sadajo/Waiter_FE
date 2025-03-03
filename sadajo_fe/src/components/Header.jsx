@@ -5,7 +5,9 @@ import '../styles/Header.css';
 const Header = ({ toggleSidebar }) => {
   return (
     <header className="header">
-      <div className="logo">SADAJO</div>
+      <div className="logo">
+        <Link to="/" className="logo-link">SADAJO</Link>
+      </div>
       <div className="menu-icon" onClick={toggleSidebar}>
         &#9776;
       </div>

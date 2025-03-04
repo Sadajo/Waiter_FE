@@ -7,9 +7,9 @@ const postApi = {
   },
   getAllPosts: async () => {
     const response = await axiosInstance.get('/posts');
-    if(response.data.status !== 'success') {
-      throw new Error(response.data.message);
-    }
+    // if(response.data.status !== 'success') {
+    //   throw new Error(response.data.message);
+    // }
     return response.data; // 이거 다시좀 봐야할듯?
   },
   createPost: async (postData) => {

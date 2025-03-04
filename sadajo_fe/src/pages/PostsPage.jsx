@@ -1,13 +1,15 @@
-﻿import React, { useEffect, useState } from 'react';
+﻿// src/pages/PostsPage.jsx
+import React, { useEffect, useState } from 'react';
 import postApi from '../api/postApi';
 import PostCard from '../components/PostCard';
-//import '../styles/PostsPage.css';
+import '../styles/PostsPage.css';
 
 const PostsPage = () => {
   const [posts, setPosts] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [filteredPosts, setFilteredPosts] = useState([]);
+  const [selectedPost, setSelectedPost] = useState(null); // 선택한 게시글(상세보기)
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -16,7 +18,7 @@ const PostsPage = () => {
         setPosts(data);
         setFilteredPosts(data);
       } catch (err) {
-        console.error(err);
+        console.error("게시글 불러오기 오류:", err);
       }
     };
 
@@ -36,8 +38,52 @@ const PostsPage = () => {
     setFilteredPosts(tempPosts);
   }, [searchKeyword, selectedCategory, posts]);
 
+  // 상세보기 상태면 상세 페이지 렌더링
+  if (selectedPost) {
+    return (
+      <div className="posts-page detail-view">
+        <button className="back-btn" onClick={() => setSelectedPost(null)}>
+          &larr; 전체 게시글 보기
+        </button>
+        <div className="post-detail">
+          <h1>{selectedPost.title}</h1>
+          <p><strong>게시글 ID:</strong> {selectedPost._id}</p>
+          <div className="post-detail-image">
+            <img src={selectedPost.imageUrl || "https://via.placeholder.com/600"} alt={selectedPost.title} />
+          </div>
+          <div className="post-detail-content">
+            <p>{selectedPost.content}</p>
+          </div>
+          <div className="post-detail-info">
+            <p><strong>작성자:</strong> {selectedPost.userId}</p>
+            <p><strong>카테고리:</strong> {selectedPost.category || '기타'}</p>
+            <p>
+              <strong>태그:</strong>{" "}
+              {selectedPost.tags && selectedPost.tags.length > 0
+                ? selectedPost.tags.join(', ')
+                : '없음'}
+            </p>
+            <p>
+              <strong>댓글 수:</strong>{" "}
+              {selectedPost.comments ? selectedPost.comments.length : 0}
+            </p>
+            <p>
+              <strong>작성일:</strong>{" "}
+              {new Date(selectedPost.createdAt).toLocaleString()}
+            </p>
+            <p>
+              <strong>수정일:</strong>{" "}
+              {new Date(selectedPost.updatedAt).toLocaleString()}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 목록 보기 상태
   return (
-    <div className="posts-page">
+    <div className="posts-page list-view">
       <h1>전체 게시글</h1>
       <div className="search-bar">
         <input
@@ -59,7 +105,7 @@ const PostsPage = () => {
       </div>
       <div className="posts-grid">
         {filteredPosts.map(post => (
-          <PostCard key={post._id} post={post} />
+          <PostCard key={post._id} post={post} setSelectedPost={setSelectedPost} mode="posts" />
         ))}
       </div>
     </div>

@@ -200,7 +200,6 @@ const HomePage = () => {
         console.error(err);
       }
     };
-
     fetchPosts();
   }, []);
 

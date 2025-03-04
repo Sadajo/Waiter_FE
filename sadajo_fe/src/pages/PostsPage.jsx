@@ -1,10 +1,14 @@
 ﻿// src/pages/PostsPage.jsx
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import postApi from '../api/postApi';
 import PostCard from '../components/PostCard';
 import '../styles/PostsPage.css';
 
 const PostsPage = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated, openLoginModal } = useOutletContext();
   const [posts, setPosts] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,6 +28,15 @@ const PostsPage = () => {
 
     fetchPosts();
   }, []);
+  // 게시글 작성 버튼 클릭 시
+  const handleCreatePost = () => {
+    if (!isAuthenticated) {
+      toast.error("게시글 작성을 위해 로그인이 필요합니다.");
+      openLoginModal();
+      return;
+    }
+    navigate('/posts/create');
+  }
 
   useEffect(() => {
     let tempPosts = posts;
@@ -84,7 +97,12 @@ const PostsPage = () => {
   // 목록 보기 상태
   return (
     <div className="posts-page list-view">
+      <div className="posts-header">
       <h1>전체 게시글</h1>
+      <button className="create-post-btn" onClick={handleCreatePost}>
+        &larr; 게시글 작성
+      </button>
+      </div>
       <div className="search-bar">
         <input
           type="text"

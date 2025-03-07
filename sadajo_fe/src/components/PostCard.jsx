@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 const PostCard = ({ post, setSelectedPost, mode }) => {
   const navigate = useNavigate();
-  const { isAuthenticated, openLoginModal } = useOutletContext();
+  const { isAuthenticated, openLoginModal, user } = useOutletContext();
 
   // 게시글 상세 페이지로 이동 또는 상세보기 상태 전환
   const goToDetail = () => {
@@ -34,13 +34,23 @@ const PostCard = ({ post, setSelectedPost, mode }) => {
       openLoginModal();
       return;
     }
-    navigate('/chats', { state: { postId: post._id } });
+  // 현재 로그인한 사용자 ID (예: localStorage에 저장된 값)
+  const currentUserId = localStorage.getItem('userId');
+  console.log('요청자 (현재 사용자):', user.id, '게시글 작성자:', post.userId);
+
+  // 본인과의 채팅 요청이라면 요청하지 않도록 처리
+  if (user.id === post.userId) {
+    toast.error("본인과의 채팅은 불가능합니다.");
+    return;
+  }
+    // post.userId가 게시글 작성자의 ID, 그리고 현재 사용자는 user.id
+    navigate('/chats', { state: { postId: post._id, postAuthorId: post.userId } });
   };
 
   return (
     <div className="post-card">
       <div className="post-meta">
-        <span>작성자: {post.userId}</span>
+        <span>작성자: {post.userName}</span>
         <span>카테고리: {post.category || '기타'}</span>
       </div>
       <div className="post-overlay">

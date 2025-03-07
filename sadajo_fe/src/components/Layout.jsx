@@ -80,6 +80,7 @@ const Layout = () => {
       const result = await userApi.logout();
       if (result && result.message === 'User logged out successfully') {
         setUser(null);
+        console.log(user);
         localStorage.removeItem('user'); // localStorage에서 삭제
         closeSidebar();
         alert("✅ 로그아웃 성공");
@@ -91,9 +92,10 @@ const Layout = () => {
       alert("로그아웃 중 오류 발생: " + error.message);
     }
   };
-
+  
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
+    
     if (savedUser) {
       try {
         const parsedUser = JSON.parse(savedUser);

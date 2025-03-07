@@ -1,89 +1,93 @@
 ﻿/* src/styles/ChatPage.css */
 .chat-page {
-    padding: 20px;
-  }
-  
-  .chat-container {
-    display: flex;
-    gap: 20px;
-    height: 70vh; /* 원하는 높이로 조정 */
-  }
-  
-  .chat-list-section {
-    flex: 1;
-    border: 1px solid #ddd;
-    padding: 10px;
-    overflow-y: auto;
-  }
-  
-  .chat-interface-section {
-    flex: 2;
-    border: 1px solid #ddd;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .chat-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .chat-list li {
-    padding: 10px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .chat-list li.active {
-    background-color: #f0f0f0;
-    font-weight: bold;
-  }
-  
-  .chat-interface {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .chat-messages {
-    flex: 1;
-    overflow-y: auto;
-    margin-bottom: 10px;
-  }
-  
-  .no-chat-selected {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    color: #999;
-  }
-  
-  .back-btn {
-    align-self: flex-end;
-    margin-bottom: 10px;
-  }
-  
-  .chat-input-form {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .chat-input-form input {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .chat-input-form button {
-    padding: 8px 12px;
-    background-color: #007bff;
-    border: none;
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
+  padding: 20px;
+}
+
+.chat-container {
+  display: flex;
+  gap: 20px;
+  height: 70vh; /* 원하는 높이로 조정 */
+}
+
+.chat-list-section {
+  flex: 1;
+  border: 1px solid #ddd;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.chat-interface-section {
+  flex: 2;
+  border: 1px solid #ddd;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  /* 명시적으로 높이를 100%로 지정 (부모의 높이를 채움) */
+  height: 100%;
+}
+.chat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.chat-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.chat-list li.active {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.chat-interface {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* 고정 높이를 100%로 설정해서 자식인 chat-messages가 채워지도록 함 */
+  height: 100%;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.chat-input-form {
+  display: flex;
+  gap: 10px;
+}
+
+.chat-input-form input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.chat-input-form button {
+  padding: 8px 12px;
+  background-color: #007bff;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.no-chat-selected {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #999;
+}
+
+.back-btn {
+  align-self: flex-end;
+  margin-bottom: 10px;
+}

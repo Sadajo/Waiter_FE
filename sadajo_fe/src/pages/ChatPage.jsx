@@ -1,5 +1,5 @@
 ﻿// src/pages/ChatPage.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useOutletContext } from 'react-router-dom';
 import io from 'socket.io-client';
 import chatApi from '../api/chatApi';
@@ -10,6 +10,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
   const [messageInput, setMessageInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [joined, setJoined] = useState(false);
+  const messagesEndRef = useRef(null);
 
   // 채팅방 입장: 한 번만 join 이벤트를 보내도록 함.
   useEffect(() => {
@@ -26,6 +27,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
       try {
         const history = await messageApi.getChatMessages(chat._id);
         console.log("Fetched message history:", history);
+        // 최신 메시지가 아래쪽에 위치하도록 정렬 (예: 시간 순 오름차순)
         setMessages(history);
       } catch (err) {
         console.error("메시지 히스토리 불러오기 실패:", err);
@@ -34,7 +36,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
     fetchHistory();
   }, [chat._id]);
 
-  // 새 메시지와 실시간 메시지 수신 처리
+  // 실시간 메시지 수신
   useEffect(() => {
     console.log("ChatInterface mounted for chat:", chat);
     socket.on('message', (msgData) => {
@@ -55,27 +57,12 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
     };
   }, [socket, chat, onNewMessage]);
 
-  // 메시지 읽음 처리: messages 상태가 업데이트되면, 현재 사용자에게서 온 것이 아니라면 읽음 처리 호출
+  // 자동 스크롤: 메시지 업데이트 시 맨 아래로 스크롤
   useEffect(() => {
-    const markMessagesAsRead = async () => {
-      const unreadMessages = messages.filter(msg => !msg.read && msg.senderId !== currentUserId);
-      for (let msg of unreadMessages) {
-        try {
-          console.log("Marking message as read, id:", msg._id);
-          await messageApi.markMessageAsRead(msg._id);
-          // 업데이트: 로컬 메시지 상태에서도 해당 메시지를 read:true로 갱신
-          setMessages(prev =>
-            prev.map(m => m._id === msg._id ? { ...m, read: true } : m)
-          );
-        } catch (err) {
-          console.error("메시지 읽음 처리 실패:", err);
-        }
-      }
-    };
-    if (messages.length > 0) {
-      markMessagesAsRead();
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, currentUserId]);
+  }, [messages]);
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -86,6 +73,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
     console.log("Socket connected:", socket.connected);
     console.log("Socket id:", socket.id);
     console.log("Sending message:", messageInput.trim(), "for chatId:", chat._id, "senderId:", currentUserId);
+    // 서버가 기대하는 키 'content' 사용
     socket.emit('sendMessage', {
       chatId: chat._id,
       senderId: currentUserId,
@@ -111,6 +99,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
             </div>
           ))
         )}
+        <div ref={messagesEndRef} />
       </div>
       <form onSubmit={handleSendMessage} className="chat-input-form">
         <input
@@ -133,7 +122,7 @@ const ChatPage = () => {
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState(null);
 
-  // localStorage에서 저장된 user 파싱하여 currentUserId 추출
+  // localStorage에서 저장된 user를 파싱하여 currentUserId 추출
   const savedUser = localStorage.getItem('user');
   const currentUser = savedUser ? JSON.parse(savedUser) : null;
   const currentUserId = currentUser ? currentUser.id : null;
@@ -142,7 +131,7 @@ const ChatPage = () => {
   console.log("Current userId:", currentUserId);
   console.log("Location state:", location.state);
 
-  // Socket 연결: REACT_APP_SOCKET_URL 환경변수를 사용, 기본값은 http://localhost:8080
+  // Socket 연결
   useEffect(() => {
     const socketUrl = process.env.REACT_APP_SOCKET_URL || 'http://localhost:8080';
     const newSocket = io(socketUrl, { withCredentials: true });
@@ -159,6 +148,7 @@ const ChatPage = () => {
     };
   }, []);
 
+  // 채팅방 목록 불러오기
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -206,7 +196,7 @@ const ChatPage = () => {
     }
   }, [location, currentUserId, socket]);
 
-  // 채팅방 목록에서 선택 시, 해당 채팅방을 선택
+  // 채팅방 목록에서 선택 시
   const handleSelectChat = (chat) => {
     console.log("handleSelectChat 호출됨");
     if (socket) {
@@ -217,7 +207,7 @@ const ChatPage = () => {
     setSelectedChat(chat);
   };
 
-  // 새로운 메시지가 도착하면, 채팅방 목록 업데이트 및 자동 선택 (선택된 채팅방이 없으면)
+  // 새 메시지 도착 시 채팅방 목록 업데이트
   const handleNewMessage = (chat, newMessage) => {
     console.log("새 메시지 도착:", newMessage, "for chat:", chat._id);
     setMyChats(prevChats =>

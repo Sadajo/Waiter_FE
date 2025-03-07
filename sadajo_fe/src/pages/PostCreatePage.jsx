@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 
 const PostCreatePage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, openLoginModal } = useOutletContext();
+  const { isAuthenticated, user = {}, openLoginModal } = useOutletContext();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
@@ -33,11 +33,12 @@ const PostCreatePage = () => {
 
     try {
       const postData = {
+        userId: user.id, 
         title,
         content,
         tags: tagsArray,
       };
-
+      console.log(user.id);
       // 실제 백엔드로 게시글 생성 요청
       const result = await postApi.createPost(postData);
       toast.success("게시글이 성공적으로 작성되었습니다!");

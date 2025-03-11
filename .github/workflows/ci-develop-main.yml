@@ -48,7 +48,7 @@ jobs:
 
       - name: Deploy to Netlify
         run: |
-          cd sadajo-fe
+          cd sadajo_fe
           npx netlify-cli deploy --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}

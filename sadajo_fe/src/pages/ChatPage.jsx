@@ -27,7 +27,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
       try {
         const history = await messageApi.getChatMessages(chat._id);
         console.log("Fetched message history:", history);
-        // 최신 메시지가 아래쪽에 위치하도록 정렬 (예: 시간 순 오름차순)
+        // 최신 메시지가 아래쪽에 보이도록 정렬(원하는 방식에 따라 조정)
         setMessages(history);
       } catch (err) {
         console.error("메시지 히스토리 불러오기 실패:", err);
@@ -48,21 +48,58 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
         }
       }
     });
+    // 메시지 읽음 이벤트 수신: 서버가 브로드캐스트하면 모두 업데이트
+    socket.on('messagesRead', (data) => {
+      if (data.chatId === chat._id) {
+        console.log("Received messagesRead event for chat:", chat._id);
+        setMessages(prev => prev.map(m => ({ ...m, read: true })));
+      }
+    });
     socket.on('error', (err) => {
       console.error("Socket error:", err);
     });
     return () => {
       socket.off('message');
+      socket.off('messagesRead');
       socket.off('error');
     };
   }, [socket, chat, onNewMessage]);
 
-  // 자동 스크롤: 메시지 업데이트 시 맨 아래로 스크롤
+  // 자동 스크롤: 새 메시지 수신 시 맨 아래로 스크롤
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages]);
+
+  // handleInputFocus: 입력창에 포커스하면 읽지 않은 메시지를 읽음 처리
+  const handleInputFocus = async () => {
+    // 현재 채팅방의 모든 메시지 중, 아직 read가 false이고, sender가 현재 사용자가 아닌 메시지 선택
+    const unreadMessages = messages.filter(msg => !msg.read && msg.senderId !== currentUserId);
+    if (unreadMessages.length > 0) {
+      console.log("Receiver focused input, marking messages as read for chat:", chat._id);
+      for (let msg of unreadMessages) {
+        // _id가 없으면 id를 사용, 그래도 없으면 건너뜀
+        const messageId = msg._id || msg.id;
+        if (!messageId) {
+          console.error("메시지 ID가 없습니다:", msg);
+          continue;
+        }
+        try {
+          await messageApi.markMessageAsRead(messageId);
+          console.log("Marked as read:", messageId);
+        } catch (err) {
+          console.error("메시지 읽음 처리 실패:", err.response ? err.response.data : err.message);
+        }
+      }
+      // 로컬 상태 업데이트: 모든 메시지를 read:true로 갱신
+      setMessages(prev => prev.map(m => ({ ...m, read: true })));
+      // 서버에 'messagesRead' 이벤트 전파
+      socket.emit('messagesRead', { chatId: chat._id });
+    } else {
+      console.log("No unread messages or sender is current user");
+    }
+  };
 
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -95,7 +132,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
             <div key={msg._id || index} className="chat-message">
               <span className="sender">{msg.senderId}:</span>
               <span className="content">{msg.message || msg.content}</span>
-              {!msg.read && <small style={{color: 'red'}}> (읽지 않음)</small>}
+              {!msg.read && <small style={{ color: 'red' }}> (읽지 않음)</small>}
             </div>
           ))
         )}
@@ -106,6 +143,7 @@ const ChatInterface = ({ chat, onBack, onNewMessage, currentUserId, socket }) =>
           type="text"
           placeholder="메시지를 입력하세요."
           value={messageInput}
+          onFocus={handleInputFocus}
           onChange={(e) => setMessageInput(e.target.value)}
         />
         <button type="submit">전송</button>
@@ -126,7 +164,7 @@ const ChatPage = () => {
   const savedUser = localStorage.getItem('user');
   const currentUser = savedUser ? JSON.parse(savedUser) : null;
   const currentUserId = currentUser ? currentUser.id : null;
-  
+
   console.log("Current user from localStorage:", currentUser);
   console.log("Current userId:", currentUserId);
   console.log("Location state:", location.state);

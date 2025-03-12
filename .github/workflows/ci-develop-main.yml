@@ -11,6 +11,9 @@ jobs:
     name: Run tests & build
     runs-on: ubuntu-latest
 
+    env:
+      CI: false  # CI 변수를 명시적으로 false로 설정
+      
     steps:
       - uses: actions/checkout@v2
 

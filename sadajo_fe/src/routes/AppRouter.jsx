@@ -4,6 +4,7 @@ import Layout from '../components/Layout';
 import HomePage from '../pages/HomePage';
 import PostsPage from '../pages/PostsPage';
 import PostCreatePage from '../pages/PostCreatePage';
+import PostEditPage from '../pages/PostEditPage';
 import ChatPage from '../pages/ChatPage';
 
 const AppRouter = () => {
@@ -14,6 +15,7 @@ const AppRouter = () => {
           <Route index element={<HomePage />} />
           <Route path="posts" element={<PostsPage/>} />
           <Route path="posts/create" element={<PostCreatePage />} />
+          <Route path="posts/edit" element={<PostEditPage />} />
           <Route path="chats" element={<ChatPage />} />
           {/* 추가 페이지 : 거래 내역 등) */}
         </Route>

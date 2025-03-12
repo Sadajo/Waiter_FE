@@ -1,6 +1,6 @@
 ﻿// src/pages/PostsPage.jsx
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import postApi from '../api/postApi';
 import PostCard from '../components/PostCard';
@@ -8,7 +8,9 @@ import '../styles/PostsPage.css';
 
 const PostsPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, openLoginModal } = useOutletContext();
+  const location = useLocation();
+  // user 정보를 추가로 받아옵니다.
+  const { isAuthenticated, openLoginModal, user } = useOutletContext();
   const [posts, setPosts] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -25,9 +27,16 @@ const PostsPage = () => {
         console.error("게시글 불러오기 오류:", err);
       }
     };
-
     fetchPosts();
   }, []);
+
+  // location.state에 selectedPost가 전달되면, 바로 상세보기 상태로 전환
+  useEffect(() => {
+    if (location.state && location.state.selectedPost) {
+      setSelectedPost(location.state.selectedPost);
+    }
+  }, [location]);
+
   // 게시글 작성 버튼 클릭 시
   const handleCreatePost = () => {
     if (!isAuthenticated) {
@@ -36,7 +45,7 @@ const PostsPage = () => {
       return;
     }
     navigate('/posts/create');
-  }
+  };
 
   useEffect(() => {
     let tempPosts = posts;
@@ -53,6 +62,21 @@ const PostsPage = () => {
 
   // 상세보기 상태면 상세 페이지 렌더링
   if (selectedPost) {
+    // 채팅하기 버튼 클릭 핸들러
+    const handleChat = () => {
+      if (!isAuthenticated) {
+        toast.error("로그인이 필요합니다. 먼저 로그인해 주세요.");
+        openLoginModal();
+        return;
+      }
+      if (user && user.id === selectedPost.userId) {
+        toast.error("본인과의 채팅은 불가능합니다.");
+        return;
+      }
+      // 채팅 페이지로 이동하면서 selectedPost의 _id와 작성자 id를 state로 전달
+      navigate('/chats', { state: { postId: selectedPost._id, postAuthorId: selectedPost.userId } });
+    };
+
     return (
       <div className="posts-page detail-view">
         <button className="back-btn" onClick={() => setSelectedPost(null)}>
@@ -89,6 +113,10 @@ const PostsPage = () => {
               {new Date(selectedPost.updatedAt).toLocaleString()}
             </p>
           </div>
+          {/* 채팅하기 버튼 추가 */}
+          <button className="chat-btn-detail" onClick={handleChat}>
+            채팅하기
+          </button>
         </div>
       </div>
     );
@@ -98,10 +126,10 @@ const PostsPage = () => {
   return (
     <div className="posts-page list-view">
       <div className="posts-header">
-      <h1>전체 게시글</h1>
-      <button className="create-post-btn" onClick={handleCreatePost}>
-        &larr; 게시글 작성
-      </button>
+        <h1>전체 게시글</h1>
+        <button className="create-post-btn" onClick={handleCreatePost}>
+          &larr; 게시글 작성
+        </button>
       </div>
       <div className="search-bar">
         <input
@@ -118,12 +146,11 @@ const PostsPage = () => {
           <option value="카테고리1">카테고리1</option>
           <option value="카테고리2">카테고리2</option>
           <option value="기타">기타</option>
-          {/* 필요한 카테고리 추가 */}
         </select>
       </div>
       <div className="posts-grid">
         {filteredPosts.map(post => (
-          <PostCard key={post._id} post={post} setSelectedPost={setSelectedPost} mode="posts" />
+          <PostCard key={post._id} post={post} />
         ))}
       </div>
     </div>

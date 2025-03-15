@@ -2,8 +2,8 @@
 import React from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import '../styles/PostCard.css';
 import PropTypes from 'prop-types';
+import BoxComponent from './BoxComponent';
 
 const PostCard = ({ post }) => {
   const navigate = useNavigate();
@@ -22,13 +22,13 @@ const PostCard = ({ post }) => {
 
   return (
     <div className="post-card">
-      <div className="post-meta">
-        <span>작성자: {post.userName}</span>
-        <span>카테고리: {post.category || '기타'}</span>
-      </div>
-      <div className="post-overlay">
-        <h3>{post.title}</h3>
-      </div>
+      <BoxComponent></BoxComponent>
+      <BoxComponent backgroundColor="bg-white">
+        <p>{post.title}</p>
+        <p>거래 희망 지역</p>
+        <p>웨이터 팁</p>
+      </BoxComponent>
+
       <div className="post-actions">
         <button className="detail-btn" onClick={goToDetail}>
           게시글 자세히 보기

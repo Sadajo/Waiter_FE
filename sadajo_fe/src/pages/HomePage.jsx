@@ -42,29 +42,12 @@ const HomePage = () => {
 
 
   return (
-    // <div className="home-page">
-    //   <h1>게시글 미리보기</h1>
-    //   {Object.keys(groupedPosts).map(category => (
-    //     <div key={category} className="category-group">
-    //       <h2>{category}</h2>
-    //       <div className="posts-grid">
-    //         {groupedPosts[category].slice(0, 9).map(post => (
-    //           <PostCard key={post._id} post={post} mode="home" />
-    //         ))}
-    //       </div>
-    //       {groupedPosts[category].length > 9 && (
-    //         <button className="see-more-btn" onClick={() => handleSeeMore(category)}>
-    //           더보기
-    //         </button>
-    //       )}
-    //     </div>
-    //   ))}
-    // </div>
+
     
     //div1
-    <div className="flex w-full flex-col items-center justify-center p-24">
-      <h1 className="text-xl md:text-2xl font-bold text-gray-900 text-center mb-6">
-        어디로 갈까요? 제가 대신 사드릴게요!
+    <div className="flex w-full flex-col bg-[#EEEEEE] items-center justify-center p-12">
+      <h1 className="text-xl md:text-2xl font-bold bg-text-gray-900 text-center mb-6">
+        어디로 갈까요? 제가 대신 사드릴게요! -TEST
       </h1> 
 
       <div className="w-full max-w-lg flex flex-col p-2">
@@ -113,16 +96,28 @@ const HomePage = () => {
           </BoxComponent>
 
           <div className="flex flex-col">
-            <BoxComponent width="w-64" height="h-32" ></BoxComponent>
-            <BoxComponent width="w-64" height="h-32" backgroundColor="bg-white">
-              <p className="font-bold">제목입니다</p>
-              <p className="text-sm">거래 희망 지역</p>
-              <p className="text-sm">웨이터 팁</p>
-            </BoxComponent>
+            <div className="home-page">
+              {Object.keys(groupedPosts).map(category => (
+                <div key={category} className="category-group">
+                  <h2>{category}</h2>
+                  <div className="posts-grid">
+                    {groupedPosts[category].slice(0, 9).map(post => (
+                      <PostCard key={post._id} post={post} mode="home" />
+                    ))}
+                  </div>
+                  {groupedPosts[category].length > 9 && (
+                    <button className="see-more-btn" onClick={() => handleSeeMore(category)}>
+                      더보기
+                    </button>
+                  )}
+                </div>
+              ))}
+              </div>
           </div>
         </div>
       </div>
   
+
     </div>
   );
 };

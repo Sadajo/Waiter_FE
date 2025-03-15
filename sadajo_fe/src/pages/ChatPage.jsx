@@ -267,39 +267,47 @@ const ChatPage = () => {
   if (loading) return <div className="chat-page">Loading...</div>;
 
   return (
-    <div className="chat-page">
-      <div className="chat-container">
-        <div className="chat-list-section">
-          <h2>내 채팅방 목록</h2>
-          <ul className="chat-list">
-            {myChats.map(chat => (
-              <li
-                key={chat._id}
-                onClick={() => handleSelectChat(chat)}
-                className={selectedChat && chat._id === selectedChat._id ? "active" : ""}
-              >
-                {chat.name || `채팅방 (${chat._id})`}
-                {chat.lastMessage && <br />}
-                {chat.lastMessage && <small>마지막 메시지: {chat.lastMessage}</small>}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="chat-interface-section">
-          {selectedChat ? (
-            <ChatInterface
-              chat={selectedChat}
-              onBack={() => setSelectedChat(null)}
-              onNewMessage={handleNewMessage}
-              currentUserId={currentUserId}
-              socket={socket}
-            />
-          ) : (
-            <div className="no-chat-selected">
-              <p>채팅방을 선택하세요</p>
-            </div>
-          )}
-        </div>
+    // <div className="chat-page">
+    //   <div className="chat-container">
+    //     <div className="chat-list-section">
+    //       <h2>내 채팅방 목록</h2>
+    //       <ul className="chat-list">
+    //         {myChats.map(chat => (
+    //           <li
+    //             key={chat._id}
+    //             onClick={() => handleSelectChat(chat)}
+    //             className={selectedChat && chat._id === selectedChat._id ? "active" : ""}
+    //           >
+    //             {chat.name || `채팅방 (${chat._id})`}
+    //             {chat.lastMessage && <br />}
+    //             {chat.lastMessage && <small>마지막 메시지: {chat.lastMessage}</small>}
+    //           </li>
+    //         ))}
+    //       </ul>
+    //     </div>
+    //     <div className="chat-interface-section">
+    //       {selectedChat ? (
+    //         <ChatInterface
+    //           chat={selectedChat}
+    //           onBack={() => setSelectedChat(null)}
+    //           onNewMessage={handleNewMessage}
+    //           currentUserId={currentUserId}
+    //           socket={socket}
+    //         />
+    //       ) : (
+    //         <div className="no-chat-selected">
+    //           <p>채팅방을 선택하세요</p>
+    //         </div>
+    //       )}
+    //     </div>
+    //   </div>
+    // </div>
+    <div className="flex bg-gray-400 ">
+      <div className="flex flex-col bg-white">
+
+      </div>
+      <div>
+
       </div>
     </div>
   );
